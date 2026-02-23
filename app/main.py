@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
     seed_default_teams(db)
     seed_default_rules(db)
     db.close()
-    start_scheduler(base_url="http://127.0.0.1:8000")
+    start_scheduler(base_url="https://workapp.pythonanywhere.com")
     yield
     stop_scheduler()
 
