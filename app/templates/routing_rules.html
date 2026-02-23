@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Routing Rules - LeadAggregator{% endblock %}
+{% block content %}
+
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-white mb-1">Routing Rules</h1>
+    <p style="color:#94a3b8;font-size:14px;">Rules evaluated in priority order — first match wins</p>
+</div>
+
+<div class="card" style="padding:0;overflow:hidden;">
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+            <tr style="background:#0f172a;color:#64748b;border-bottom:1px solid #334155;">
+                <th style="text-align:left;padding:12px 16px;">Priority</th>
+                <th style="text-align:left;padding:12px 16px;">Source Match</th>
+                <th style="text-align:left;padding:12px 16px;">Keyword Match</th>
+                <th style="text-align:left;padding:12px 16px;">Country Match</th>
+                <th style="text-align:left;padding:12px 16px;">Applies Tag</th>
+                <th style="text-align:left;padding:12px 16px;">Routes To</th>
+                <th style="text-align:left;padding:12px 16px;">Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rule in rules %}
+            <tr style="border-bottom:1px solid #0f172a;" onmouseover="this.style.background='#0f172a'" onmouseout="this.style.background='transparent'">
+                <td style="padding:12px 16px;color:#6366f1;font-weight:700;">{{ rule.priority }}</td>
+                <td style="padding:12px 16px;color:#f1f5f9;">{{ rule.source or '<span style="color:#334155;">any</span>' | safe }}</td>
+                <td style="padding:12px 16px;color:#f1f5f9;">{{ rule.keyword or '<span style="color:#334155;">any</span>' | safe }}</td>
+                <td style="padding:12px 16px;color:#f1f5f9;">{{ rule.country or '<span style="color:#334155;">any</span>' | safe }}</td>
+                <td style="padding:12px 16px;">
+                    {% if rule.tag %}
+                    <span style="background:#1e293b;border:1px solid #334155;color:#94a3b8;padding:3px 10px;border-radius:999px;font-size:11px;">{{ rule.tag }}</span>
+                    {% else %}<span style="color:#334155;">—</span>{% endif %}
+                </td>
+                <td style="padding:12px 16px;">
+                    <span style="background:#312e81;color:#c7d2fe;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;">{{ rule.assign_to_team }}</span>
+                </td>
+                <td style="padding:12px 16px;">
+                    <span style="width:8px;height:8px;border-radius:50%;display:inline-block;background:{% if rule.is_active %}#22c55e{% else %}#ef4444{% endif %};"></span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

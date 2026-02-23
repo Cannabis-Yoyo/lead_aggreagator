@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LeadAggregator{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            950: '#0f172a',
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background: #0f172a; color: #f1f5f9; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; }
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+        .badge-facebook { background: #1d4ed8; color: #bfdbfe; }
+        .badge-google { background: #15803d; color: #bbf7d0; }
+        .badge-form { background: #7c3aed; color: #ede9fe; }
+        .badge-email { background: #b45309; color: #fef3c7; }
+        .badge-new { background: #1e40af; color: #bfdbfe; }
+        .badge-contacted { background: #6d28d9; color: #ede9fe; }
+        .badge-converted { background: #065f46; color: #6ee7b7; }
+        .badge-junk { background: #7f1d1d; color: #fecaca; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav style="background:#1e293b;border-bottom:1px solid #334155;" class="px-8 py-4 flex items-center justify-between sticky top-0 z-50">
+        <span style="color:#6366f1;font-size:1.25rem;font-weight:700;letter-spacing:-0.5px;">LeadAggregator</span>
+        <div class="flex gap-6 text-sm" style="color:#94a3b8;">
+            <a href="/" class="hover:text-white transition-colors">Dashboard</a>
+            <a href="/leads-page" class="hover:text-white transition-colors">Leads</a>
+            <a href="/routing-page" class="hover:text-white transition-colors">Routing Rules</a>
+        </div>
+        <form action="/trigger-lead" method="post">
+            <button type="submit" style="background:#6366f1;color:white;border:none;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+                Trigger Lead
+            </button>
+        </form>
+    </nav>
+    <main class="px-8 py-8 max-w-7xl mx-auto">
+        {% block content %}{% endblock %}
+    </main>
+    <script>{% block scripts %}{% endblock %}</script>
+</body>
+</html>

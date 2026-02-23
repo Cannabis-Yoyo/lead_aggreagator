@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - LeadAggregator{% endblock %}
+{% block content %}
+
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-white mb-1">Dashboard</h1>
+    <p style="color:#94a3b8;font-size:14px;">Real-time lead aggregation and routing overview</p>
+</div>
+
+<div class="grid grid-cols-4 gap-5 mb-8">
+    <div class="card">
+        <p style="color:#94a3b8;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Total Leads</p>
+        <p style="font-size:2rem;font-weight:700;color:#f1f5f9;margin-top:4px;">{{ stats.total_leads }}</p>
+    </div>
+    <div class="card">
+        <p style="color:#94a3b8;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Today</p>
+        <p style="font-size:2rem;font-weight:700;color:#6366f1;margin-top:4px;">{{ stats.today_leads }}</p>
+    </div>
+    <div class="card">
+        <p style="color:#94a3b8;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Duplicates Blocked</p>
+        <p style="font-size:2rem;font-weight:700;color:#f59e0b;margin-top:4px;">{{ stats.duplicate_count }}</p>
+    </div>
+    <div class="card">
+        <p style="color:#94a3b8;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Converted</p>
+        <p style="font-size:2rem;font-weight:700;color:#22c55e;margin-top:4px;">{{ stats.conversion_count }}</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-3 gap-5 mb-8">
+    <div class="card col-span-2">
+        <p style="color:#94a3b8;font-size:13px;font-weight:600;margin-bottom:16px;">Leads Over Last 14 Days</p>
+        <canvas id="lineChart" height="100"></canvas>
+    </div>
+    <div class="card">
+        <p style="color:#94a3b8;font-size:13px;font-weight:600;margin-bottom:16px;">Leads by Source</p>
+        <canvas id="donutChart"></canvas>
+    </div>
+</div>
+
+<div class="card">
+    <p style="color:#94a3b8;font-size:13px;font-weight:600;margin-bottom:16px;">Recent Leads</p>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+            <tr style="color:#64748b;border-bottom:1px solid #334155;">
+                <th style="text-align:left;padding:8px 12px;">Name</th>
+                <th style="text-align:left;padding:8px 12px;">Email</th>
+                <th style="text-align:left;padding:8px 12px;">Source</th>
+                <th style="text-align:left;padding:8px 12px;">Team</th>
+                <th style="text-align:left;padding:8px 12px;">Status</th>
+                <th style="text-align:left;padding:8px 12px;">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lead in recent %}
+            <tr style="border-bottom:1px solid #1e293b;" onmouseover="this.style.background='#1e293b'" onmouseout="this.style.background='transparent'">
+                <td style="padding:10px 12px;"><a href="/lead/{{ lead.id }}" style="color:#6366f1;text-decoration:none;">{{ lead.name or '-' }}</a></td>
+                <td style="padding:10px 12px;color:#94a3b8;">{{ lead.email or '-' }}</td>
+                <td style="padding:10px 12px;"><span class="badge badge-{{ lead.source }}">{{ lead.source }}</span></td>
+                <td style="padding:10px 12px;color:#94a3b8;">{{ lead.assigned_team or '-' }}</td>
+                <td style="padding:10px 12px;"><span class="badge badge-{{ lead.status }}">{{ lead.status }}</span></td>
+                <td style="padding:10px 12px;color:#64748b;">{{ lead.created_at.strftime('%b %d, %H:%M') if lead.created_at else '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+{% block scripts %}
+const lineData = {{ stats.leads_over_time | tojson }};
+const sourceData = {{ stats.sources | tojson }};
+
+new Chart(document.getElementById('lineChart'), {
+    type: 'line',
+    data: {
+        labels: lineData.map(d => d.date),
+        datasets: [{
+            label: 'Leads',
+            data: lineData.map(d => d.count),
+            borderColor: '#6366f1',
+            backgroundColor: 'rgba(99,102,241,0.08)',
+            borderWidth: 2,
+            pointBackgroundColor: '#6366f1',
+            fill: true,
+            tension: 0.4,
+        }]
+    },
+    options: {
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { grid: { color: '#334155' }, ticks: { color: '#64748b', font: { size: 11 } } },
+            y: { grid: { color: '#334155' }, ticks: { color: '#64748b', font: { size: 11 } } }
+        }
+    }
+});
+
+new Chart(document.getElementById('donutChart'), {
+    type: 'doughnut',
+    data: {
+        labels: Object.keys(sourceData),
+        datasets: [{
+            data: Object.values(sourceData),
+            backgroundColor: ['#6366f1','#22c55e','#f59e0b','#ef4444'],
+            borderWidth: 0,
+        }]
+    },
+    options: {
+        plugins: {
+            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 12 } } }
+        },
+        cutout: '65%',
+    }
+});
+{% endblock %}
